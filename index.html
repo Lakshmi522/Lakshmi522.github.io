@@ -47,8 +47,8 @@ function receiveMessage(event) {
   <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
     <a class="w3-bar-item w3-button w3-center w3-hide-large w3-hover-white w3-large w3-theme-l1" href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
 	<a href="#" class="w3-bar-item w3-button w3-theme-l1">EMR Home</a>
-	<a href="#" target="_blank" class="w3-bar-item w3-button w3-theme-l1" onclick="launch_drug_interactions">Drug Interactions</a>
-	<a href="#" target="_blank" class="w3-bar-item w3-button w3-theme-l1" onclick="launch_iv_compatability">IV Compatibility</a>
+	<a href="#" target="_blank" class="w3-bar-item w3-button w3-theme-l1" onclick="return launch_drug_interactions();">Drug Interactions</a>
+	<a href="#" target="_blank" class="w3-bar-item w3-button w3-theme-l1" onclick="return launch_iv_compatability();">IV Compatibility</a>
 	<a href="#" target="_blank" class="w3-bar-item w3-button w3-theme-l1">NeoFax & Pediatrics</a>
 	<a href="#" class="w3-bar-item w3-button w3-theme-l1">Help</a>
   </div>
@@ -82,6 +82,11 @@ function receiveMessage(event) {
 	<div id="event-from-mdx" style="background-color: wheat;">
     </div>
     <div class="w3-right">
+        <label for="wainput">&#8478; Ask Watson:</label>
+        <br>
+        <input style="background-color: greenyellow;" type="text" placeholder="What would you like to know? ..." id="wainput" name="wainput" size="66" onkeydown="launch_chatbot_input(this)"></input>
+        <br>&nbsp;
+        <br>
 			<iframe id="AskWatson" style="width: 480px; height: 680px;" >
 			</iframe>
 		</div>
@@ -99,7 +104,7 @@ function receiveMessage(event) {
 
 <script>
 
-const IFRAME_URL = "https://mdx-pwa-dev-test.cmdx-k8s-2nodes-1zone.us-south.containers.appdomain.cloud"
+const IFRAME_URL = "https://mdx-pwa-dev-test.cmdx-k8s-2nodes-1zone.us-south.containers.appdomain.cloud/"
 
     // Get the Sidebar
 var mySidebar = document.getElementById("mySidebar");
@@ -123,12 +128,27 @@ function w3_open() {
 window.onload = event => {
     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! window.onload: ENTER")
     document.getElementById("AskWatson").src = IFRAME_URL
+
+    document.getElementById("wainput").addEventListener("keydown", function(event) {
+        console.log("========================== wainput event=",event)
+        if (event.key === "Enter") {
+            const text_field = event.target
+            const input_text = text_field.value // get current user input
+            launch_chatbot_input(input_text)  // send input_text to watson assistant
+            text_field.value = ''  // clear the input field
+            event.preventDefault();
+            return false;
+        } //endif
+        return true;
+    })
 }
 
-function launch_pwa_handler(event, page_type='', user_input='') {
+function launch_pwa_handler(page_type='', user_input='') {
     console.log("===================================>>>>>   launch_pwa_handler: ENTER page_type=", page_type, "user_input=", user_input);
-    event.preventDefault();
-    document.getElementById("AskWatson").postMessage(
+    // event.preventDefault();
+    const iframe = document.getElementById("AskWatson");
+    const iframe_window =  iframe.contentWindow || iframe.contentDocument
+    iframe_window.postMessage(
         {
             type: page_type,
             name: "MDXWatsonNavigateTool",
@@ -140,17 +160,17 @@ function launch_pwa_handler(event, page_type='', user_input='') {
     return false; // prevent anchor tag from opening href url
 }
 
-function launch_drug_interactions(event) {
-    return launch_pwa_handler(event, 'drugInteraction')
+function launch_drug_interactions() {
+    return launch_pwa_handler('drugInteraction')
 }
 
-function launch_iv_compatability(event) {
-    return launch_pwa_handler(event, 'ivCompatibilitySearch')
+function launch_iv_compatability() {
+    return launch_pwa_handler('ivCompatibility')
 }
 
-function launch_chatbot_input(event) {
-    const user_input = "adult dose wafarin"  // TODO: get this from input field
-    return launch_pwa_handler(event, 'chatbotInput', user_input)
+function launch_chatbot_input(user_input) {
+    // const user_input = "adult dose wafarin"  // TODO: get this from input field
+    return launch_pwa_handler('chatbotInput', user_input)
 }
 	
 // Close the sidebar with the close button
