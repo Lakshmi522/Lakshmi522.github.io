@@ -147,15 +147,17 @@ function launch_pwa_handler(page_type='', user_input='') {
     console.log("===================================>>>>>   launch_pwa_handler: ENTER page_type=", page_type, "user_input=", user_input);
     // event.preventDefault();
     const iframe = document.getElementById('AskWatson');
-    const iframe_window =  iframe.contentWindow || iframe.contentDocument
+    const iframe_window =  iframe.contentWindow; //|| iframe.contentDocument
     console.log('iframe====================',iframe);
 //     console.log('iframe window.........................##',iframe_window);
-    iframe_window.postMessage(
-        {
+	const message={
             navType: page_type,
             name: "MDXWatsonNavigateTool",
             input: user_input
-        },
+        };
+	console.log('Printing message  ****************', message);
+    iframe_window.postMessage(
+	    message,
         IFRAME_URL
     )
     console.log("launch_pwa_handler: EXIT");
