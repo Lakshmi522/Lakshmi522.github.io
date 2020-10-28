@@ -148,6 +148,8 @@ function launch_pwa_handler(page_type='', user_input='') {
     // event.preventDefault();
     const iframe = document.getElementById('AskWatson');
     const iframe_window =  iframe.contentWindow || iframe.contentDocument
+    console.log('iframe====================',iframe);
+    console.log('iframe window.........................##',iframe_window);
     iframe_window.postMessage(
         {
             navType: page_type,
