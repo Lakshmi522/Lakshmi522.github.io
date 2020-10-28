@@ -150,7 +150,7 @@ function launch_pwa_handler(page_type='', user_input='') {
     const iframe_window =  iframe.contentWindow || iframe.contentDocument
     iframe_window.postMessage(
         {
-            type: page_type,
+            navType: page_type,
             name: "MDXWatsonNavigateTool",
             input: user_input
         },
